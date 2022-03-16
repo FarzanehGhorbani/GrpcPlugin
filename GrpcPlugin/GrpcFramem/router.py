@@ -3,16 +3,17 @@ import functools
 import inspect
 from .enums import ResponseModelType,Method
 from .middleware import BaseMiddleware
-
+from ..protos.base_proto_pb2 import Request
+from .exception import InternalErrorException,def_internal_error_exception
 
 class Router:
     routes_function:Dict[tuple,callable]={}
-
+    exception_handlers:Dict[Exception,callable]={}
 
     def __init__(self) -> None:
         self.middleware_list : List[BaseMiddleware] = []
-        self.exception_handlers:list=[]
-
+        Router.exception_handlers[InternalErrorException]=def_internal_error_exception
+        
     
     def __call__(self,url:str,method:Method,response_model:ResponseModelType=ResponseModelType.none):
         return self.route_method(url,method,response_model)
@@ -36,7 +37,8 @@ class Router:
             Router.routes_function[(url,method)]=self.__middleware(func)
 
 
-    async def funtion_call(self,func:callable,*args,**kwargs):
+    @staticmethod
+    async def funtion_call_handler(func:callable,*args,**kwargs):
         """Handle async and sync functions."""
         if inspect.iscoroutinefunction(func):                     
             result = await func(*args,**kwargs)
@@ -55,7 +57,7 @@ class Router:
             @functools.wraps(func)
             async def wrapper(request,context): 
                 
-                result=await self.funtion_call(func,request,context)
+                result=await Router.funtion_call_handler(func,request,context)
                 
                 return result
 
@@ -72,14 +74,14 @@ class Router:
             for m in self.middleware_list:
                 m.request=request
                 m.context=context
-                request,context=await self.funtion_call(m.before_function) 
+                request,context=await Router.funtion_call_handler(m.before_function) 
             
-            response=await self.funtion_call(func,request,context)
+            response=await Router.funtion_call_handler(func,request,context)
             
             
             for m in self.middleware_list:
                 m.response=response
-                response=await self.funtion_call(m.after_function)
+                response=await Router.funtion_call_handler(m.after_function)
             
             return response
         
@@ -87,7 +89,35 @@ class Router:
 
     
     def add_exception_handler(self,exc:Exception,func):
-        self.exception_handlers.append((exc,func))
+        Router.exception_handlers[exc]=func
+
+    
+    @classmethod
+    async def find_function(cls,request:Request,context):
+        route_function=cls.routes_function[request.url,Method(request.method).name]
+        try:
+            return await route_function(request,context)
+        except Exception as exc :
+            try:
+                return await cls.funtion_call_handler(cls.exception_handlers[type(exc)],exc)
+            except:
+                print(exc)
+                return await cls.funtion_call_handler(cls.exception_handlers[InternalErrorException],exc) 
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

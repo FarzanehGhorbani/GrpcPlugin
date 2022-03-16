@@ -6,17 +6,11 @@ from .router import Router
 from .enums import Method
 
 class HTTPService(HTTPHandlerServicer):
-    async def Dispatch(self, request, context):
-        try:
-            route_function=Router.routes_function[request.url,Method(request.method).name]
-        except:
-            context.set_code(grpc.StatusCode.NOT_FOUND)
-            context.set_details(f'Method not Found! with url: {request.url} and method: {Method(request.method).name}')
-            return Response(status_code=404,result=False,message='Method not Found! with url: '+request.url+' and method: '+Method(request.method).name)
-        return await route_function(request,context)
+    async def Dispatch(self, request, context): 
+        return await Router.find_function(request,context)
+        
 
-class Handler(HTTPService):
-    ...
+
 
         
         
@@ -25,7 +19,7 @@ class Handler(HTTPService):
 
 async def serve() -> None:
     server = grpc.aio.server()
-    add_HTTPHandlerServicer_to_server(Handler(), server)
+    add_HTTPHandlerServicer_to_server(HTTPService(), server)
     listen_addr = '[::]:50051'
     server.add_insecure_port(listen_addr)
     print("Starting server on %s", listen_addr)
