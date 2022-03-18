@@ -1,9 +1,5 @@
 from google.protobuf.struct_pb2 import Struct
 from ..protos.base_proto_pb2 import Response
-class UnicornException(Exception):
-    def __init__(self, name: str):
-        self.name = name
-
 
 
 class NotFoundException(Exception):
@@ -14,6 +10,10 @@ class NotFoundException(Exception):
 class InternalErrorException(Exception):
     def __init__(self):
         ...
+
+class ValdationError(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
 
 
 def def_internal_error_exception(exc:InternalErrorException):

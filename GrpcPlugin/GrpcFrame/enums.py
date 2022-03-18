@@ -1,9 +1,8 @@
 from enum import Enum
 
 class ResponseModelType(Enum):
-    none=1
-    text=2
-    json=3
+    json=0
+    text=1
 
 
 class Method(Enum):
