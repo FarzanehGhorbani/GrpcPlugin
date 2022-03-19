@@ -7,7 +7,7 @@ from .router import Router_Manager
 class HTTPService(HTTPHandlerServicer):
     async def Dispatch(self, request, context): 
         router_manage=Router_Manager()
-        return await router_manage.dispatch(request,context)
+        return await router_manage.dispatch(request)
         
         
 

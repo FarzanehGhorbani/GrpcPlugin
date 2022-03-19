@@ -9,9 +9,9 @@ async def async_caller(url:str,method:Method,body:dict):
     async with grpc.aio.insecure_channel('localhost:50051') as channel:
         stub = HTTPHandlerStub(channel)
         s=Struct()
-        
+        s.update(body)
         try : 
-            request=Request(url=url,method=method.upper(),body=s.update(body))
+            request=Request(url=url,method=method.upper(),body=s)
         except :
             raise ValueError("Method Not Allowed")
         

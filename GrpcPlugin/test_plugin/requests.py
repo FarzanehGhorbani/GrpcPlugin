@@ -1,18 +1,15 @@
-# from urllib import parse
-# url = "/default.html?ct=32&op=92&item=98"
-# print(parse.urlsplit(url))
-
-class SignInQueryParams:
-    key:int
-    type_user:str
-
-class Request:
-    path:str
-    query_params:SignInQueryParams
-    host:str=None
-    schema:str=None
+from ..GrpcFrame.request_response_bases import BodyBase,QueryParametersBase
 
 
-class SignInBody:
+class UrlParameter(QueryParametersBase):
+    user_id:int
+    token:str
+
+
+
+class Body(BodyBase):
     username:str
+    email:str
     age:int
+
+

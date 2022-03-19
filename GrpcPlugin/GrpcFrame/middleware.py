@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 class BaseMiddleware(ABC):
     def __init__(self):
         self.request=None
-        self.context=None
         self.response=None
 
     @abstractmethod
