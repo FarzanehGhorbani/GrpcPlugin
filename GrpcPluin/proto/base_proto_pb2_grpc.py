@@ -2,10 +2,10 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from GrpcPlugin.protos import base_proto_pb2 as GrpcPlugin_dot_protos_dot_base__proto__pb2
+from . import base_proto_pb2 as base__proto__pb2
 
 
-class HTTPHandlerStub(object):
+class GrpcHandlerStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,13 +15,13 @@ class HTTPHandlerStub(object):
             channel: A grpc.Channel.
         """
         self.Dispatch = channel.unary_unary(
-                '/HTTPHandler/Dispatch',
-                request_serializer=GrpcPlugin_dot_protos_dot_base__proto__pb2.Request.SerializeToString,
-                response_deserializer=GrpcPlugin_dot_protos_dot_base__proto__pb2.Response.FromString,
+                '/GrpcHandler/Dispatch',
+                request_serializer=base__proto__pb2.Request.SerializeToString,
+                response_deserializer=base__proto__pb2.Response.FromString,
                 )
 
 
-class HTTPHandlerServicer(object):
+class GrpcHandlerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Dispatch(self, request, context):
@@ -31,21 +31,21 @@ class HTTPHandlerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_HTTPHandlerServicer_to_server(servicer, server):
+def add_GrpcHandlerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Dispatch': grpc.unary_unary_rpc_method_handler(
                     servicer.Dispatch,
-                    request_deserializer=GrpcPlugin_dot_protos_dot_base__proto__pb2.Request.FromString,
-                    response_serializer=GrpcPlugin_dot_protos_dot_base__proto__pb2.Response.SerializeToString,
+                    request_deserializer=base__proto__pb2.Request.FromString,
+                    response_serializer=base__proto__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'HTTPHandler', rpc_method_handlers)
+            'GrpcHandler', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
  # This class is part of an EXPERIMENTAL API.
-class HTTPHandler(object):
+class GrpcHandler(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -59,8 +59,8 @@ class HTTPHandler(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/HTTPHandler/Dispatch',
-            GrpcPlugin_dot_protos_dot_base__proto__pb2.Request.SerializeToString,
-            GrpcPlugin_dot_protos_dot_base__proto__pb2.Response.FromString,
+        return grpc.experimental.unary_unary(request, target, '/GrpcHandler/Dispatch',
+            base__proto__pb2.Request.SerializeToString,
+            base__proto__pb2.Response.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

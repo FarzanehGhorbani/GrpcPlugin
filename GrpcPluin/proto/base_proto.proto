@@ -1,0 +1,48 @@
+syntax="proto3";
+import "google/protobuf/struct.proto";
+
+
+service GrpcHandler{
+    rpc Dispatch(Request) returns (Response) {};
+}
+
+enum Method{
+    GET = 0;
+    POST = 1;
+    PUT=2;
+    DELETE=3;
+}
+
+message Request{
+    string url = 1;
+    Method method=2;
+    google.protobuf.Struct body=3;
+}
+
+message Response{
+    bool result=1;
+    int64 status_code=4;
+    optional string message=2;
+    optional google.protobuf.Struct data=3;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
